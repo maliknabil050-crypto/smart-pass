@@ -8,10 +8,13 @@
   <meta name="theme-color" content="#030712">
   <title>NABIL ALNAMER | EXECUTIVE TACTICAL SUITE</title>
 
-  <!-- Tailwind CSS & FontAwesome -->
+  <!-- Tailwind & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- مكتبة توليد رمز QR -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     :root {
@@ -19,11 +22,7 @@
       --gold-glow: rgba(212, 175, 55, 0.25);
       --hud-border: rgba(212, 175, 55, 0.15);
     }
-    * {
-      font-family: 'Tajawal', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      box-sizing: border-box;
-    }
+    * { font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
     .mono-data { font-family: 'Space Grotesk', monospace; }
     
     body {
@@ -48,11 +47,7 @@
       box-shadow: 0 4px 20px var(--gold-glow);
     }
 
-    .redacted {
-      filter: blur(5px);
-      user-select: none;
-      transition: filter 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .redacted { filter: blur(5px); user-select: none; transition: filter 0.25s ease; }
     .revealed { filter: blur(0px); }
 
     .pulse-ring {
@@ -63,9 +58,7 @@
       50% { transform: scale(1.15); opacity: 0.3; }
       100% { transform: scale(0.95); opacity: 0.8; }
     }
-
     .custom-scroll::-webkit-scrollbar { display: none; }
-    .custom-scroll { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="text-slate-200 min-h-screen pb-24 select-none relative overflow-x-hidden">
@@ -86,11 +79,7 @@
       </div>
     </div>
 
-    <!-- Mode Selector & Audio Toggle -->
     <div class="flex items-center gap-2">
-      <button onclick="toggleAudio()" id="soundToggle" class="w-8 h-8 rounded-lg hud-card flex items-center justify-center text-slate-400 hover:text-amber-400 text-xs">
-        <i class="fa-solid fa-volume-high"></i>
-      </button>
       <button onclick="toggleOwnerMode()" id="authBtn" class="text-[11px] px-2.5 py-1.5 rounded-lg hud-card border border-amber-500/30 text-amber-300 flex items-center gap-1.5 active:scale-95 transition">
         <i class="fa-solid fa-fingerprint text-xs"></i>
         <span id="authBadge">المالك</span>
@@ -98,421 +87,551 @@
     </div>
   </header>
 
-  <!-- Visitor View: بطاقة الهوية الرقمية للزائر -->
+  <!-- Visitor View -->
   <main id="visitorView" class="hidden p-4 max-w-sm mx-auto space-y-4 pt-6">
     <div class="hud-card p-6 rounded-3xl text-center relative overflow-hidden border-amber-500/30">
-      <div class="absolute -right-12 -top-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
-      
-      <div class="relative w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600/30 to-amber-400/10 border border-amber-500/40 p-1 flex items-center justify-center mb-4">
+      <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600/30 to-amber-400/10 border border-amber-500/40 p-1 flex items-center justify-center mb-4">
         <span class="mono-data text-2xl font-bold text-amber-400 tracking-tighter">NA</span>
       </div>
-
-      <h2 class="text-lg font-bold text-white tracking-wide">نبيل النمر</h2>
+      <h2 class="text-lg font-bold text-white tracking-wide">نبيل محمد علي محمد</h2>
       <p class="text-xs text-amber-400 font-mono mt-0.5">MARKETING SPECIALIST</p>
       <p class="text-[11px] text-slate-400 mt-2 flex items-center justify-center gap-1">
         <i class="fa-solid fa-location-dot text-rose-500"></i> الرياض، المملكة العربية السعودية
       </p>
-
       <div class="grid grid-cols-2 gap-2.5 mt-5">
-        <a href="tel:+966502777884" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200 hover:border-amber-500/50 transition">
+        <a href="tel:+966502777884" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200">
           <i class="fa-solid fa-phone text-amber-400"></i> اتصال
         </a>
-        <a href="https://wa.me/966502777884" target="_blank" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200 hover:border-emerald-500/50 transition">
+        <a href="https://wa.me/966502777884" target="_blank" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200">
           <i class="fa-brands fa-whatsapp text-emerald-400"></i> واتساب
         </a>
       </div>
-
-      <button onclick="downloadVCard()" class="w-full mt-3 gold-glow-btn text-black font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition active:scale-95">
+      <button onclick="downloadVCard()" class="w-full mt-3 gold-glow-btn text-black font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
         <i class="fa-solid fa-address-card"></i> حفظ جهة الاتصال (vCard)
       </button>
     </div>
-
-    <div class="text-center pt-4">
-      <p class="text-[10px] text-slate-500 font-mono">ENCRYPTED NFC PROFILE • PROTOCOL V4</p>
-    </div>
   </main>
 
-  <!-- Owner View: النظام التكتيكي المكون من 5 بطاقات -->
+  <!-- Owner View -->
   <main id="ownerView" class="p-4 max-w-md mx-auto space-y-4">
 
-    <!-- Card Selector (Horizontal HUD Tabs) -->
+    <!-- Card Selector -->
     <div class="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll">
-      <button onclick="setActiveCard('vehicle')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap active-tab border-amber-500/40 text-amber-400" data-card="vehicle">
-        <i class="fa-solid fa-car"></i> المركبة
+      <button onclick="setActiveCard('vault')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap active-tab border-amber-500/40 text-amber-400" data-card="vault">
+        <i class="fa-solid fa-id-card"></i> وثائقي وبنوكي
       </button>
-      <button onclick="setActiveCard('emergency')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white" data-card="emergency">
+      <button onclick="setActiveCard('travel')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400" data-card="travel">
+        <i class="fa-solid fa-plane-up"></i> السفر والرحلة
+      </button>
+      <button onclick="setActiveCard('vehicle')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400" data-card="vehicle">
+        <i class="fa-solid fa-car"></i> المركبة والرخصة
+      </button>
+      <button onclick="setActiveCard('emergency')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400" data-card="emergency">
         <i class="fa-solid fa-shield-heart"></i> الطوارئ
       </button>
-      <button onclick="setActiveCard('travel')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white" data-card="travel">
-        <i class="fa-solid fa-plane-up"></i> السفر
-      </button>
-      <button onclick="setActiveCard('luggage')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white" data-card="luggage">
+      <button onclick="setActiveCard('luggage')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400" data-card="luggage">
         <i class="fa-solid fa-suitcase-rolling"></i> الأمتعة
-      </button>
-      <button onclick="setActiveCard('vault')" class="tab-btn px-3 py-2 rounded-xl hud-card text-xs flex items-center gap-2 whitespace-nowrap text-slate-400 hover:text-white" data-card="vault">
-        <i class="fa-solid fa-vault"></i> الوثائق
       </button>
     </div>
 
-    <!-- 1. MODULE: بطاقة السيارة الذكية -->
-    <section id="module-vehicle" class="space-y-3">
-      <!-- رادار الموقف وتتبع الموقع -->
-      <div class="hud-card p-5 rounded-3xl space-y-4 relative">
-        <div class="flex justify-between items-center">
-          <span class="text-xs font-bold text-amber-400 flex items-center gap-2">
-            <i class="fa-solid fa-satellite-dish"></i> رادار موقع المركبة
-          </span>
-          <span id="parkingTime" class="mono-data text-[10px] text-slate-400">غير محدد</span>
-        </div>
-
-        <div class="flex items-center justify-between bg-black/40 p-3 rounded-2xl border border-white/5">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-              <i class="fa-solid fa-location-crosshairs text-base"></i>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white" id="carStatusLabel">لم يتم تحديد الموقف</div>
-              <div class="mono-data text-[10px] text-slate-400 mt-0.5" id="carCoords">--.------, --.------</div>
-            </div>
-          </div>
-          <button onclick="locateCar()" class="p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 active:scale-95 transition">
-            <i class="fa-solid fa-compass text-sm"></i>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="saveCarGPS()" class="gold-glow-btn text-black py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition">
-            <i class="fa-solid fa-thumbtack"></i> تثبيت الموقف هنا
-          </button>
-          <button onclick="openCarRoute()" class="hud-card text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 hover:border-amber-500/40 transition">
-            <i class="fa-solid fa-diamond-turn-right text-amber-400"></i> ملاحة المركبة
-          </button>
-        </div>
-      </div>
-
-      <!-- مقاييس الصيانة والوقود -->
-      <div class="grid grid-cols-2 gap-2.5">
-        <div class="hud-card p-4 rounded-2xl space-y-1">
-          <div class="flex justify-between items-center text-[11px] text-slate-400">
-            <span>زيت المحرك</span>
-            <i class="fa-solid fa-oil-can text-amber-400"></i>
-          </div>
-          <div class="mono-data text-lg font-bold text-white">4,200 <span class="text-[10px] font-normal text-slate-400">كم متبقي</span></div>
-          <div class="w-full bg-slate-800 rounded-full h-1 mt-2">
-            <div class="bg-amber-400 h-1 rounded-full" style="width: 58%"></div>
-          </div>
-        </div>
-
-        <div class="hud-card p-4 rounded-2xl space-y-1">
-          <div class="flex justify-between items-center text-[11px] text-slate-400">
-            <span>التأمين والفحص</span>
-            <i class="fa-solid fa-shield text-emerald-400"></i>
-          </div>
-          <div class="mono-data text-lg font-bold text-white">142 <span class="text-[10px] font-normal text-slate-400">يوم</span></div>
-          <p class="text-[9px] text-emerald-400/90 truncate">وثيقة سارية • التعاونية</p>
-        </div>
-      </div>
-
-      <!-- تسجيل وقود سريع بنقرة -->
-      <div class="hud-card p-4 rounded-2xl flex items-center justify-between">
-        <div>
-          <div class="text-xs font-bold text-white">تسجيل تعبئة وقود</div>
-          <div class="text-[10px] text-slate-400">إضافة فورية لدفتر المصروفات</div>
-        </div>
-        <button onclick="logFuelQuick()" class="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold active:scale-95 transition">
-          + تعبئة سريعة
-        </button>
-      </div>
-    </section>
-
-    <!-- 2. MODULE: بطاقة الطوارئ والاستغاثة (ICE) -->
-    <section id="module-emergency" class="hidden space-y-3">
-      <!-- زر الاستغاثة الرئيسي SOS -->
-      <div class="hud-card p-5 rounded-3xl border-rose-500/30 text-center space-y-3 relative overflow-hidden">
-        <div class="absolute -left-10 -bottom-10 w-28 h-28 bg-rose-600/10 rounded-full blur-2xl"></div>
-        <div class="flex items-center justify-between text-xs text-rose-400 font-bold">
-          <span><i class="fa-solid fa-triangle-exclamation"></i> بروتوكول الاستغاثة الطارئ</span>
-          <span class="mono-data">STATUS: ACTIVE</span>
-        </div>
-        
-        <button onclick="broadcastEmergencySOS()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 to-rose-700 text-white font-black text-sm tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-rose-900/40 active:scale-95 transition">
-          <i class="fa-solid fa-tower-broadcast text-lg animate-pulse"></i> بث إحداثيات وموقع الاستغاثة
-        </button>
-        <p class="text-[10px] text-slate-400">يرسل رسالة طوارئ فورية عبر واتساب مع رابط إحداثيات GPS الحية للأرقام المعتمدة</p>
-      </div>
-
-      <!-- أرقام الاتصال السريع ICE -->
-      <div class="space-y-2">
-        <div class="text-[11px] font-bold text-slate-400 px-1">جهات الاتصال المعتمدة للطوارئ</div>
-        <div class="grid grid-cols-2 gap-2">
-          <a href="tel:0500000000" class="hud-card p-3 rounded-2xl flex items-center gap-2.5 hover:border-rose-500/40 transition">
-            <div class="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 text-xs">
-              <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white">الأسرة (ICE 1)</div>
-              <div class="mono-data text-[10px] text-slate-400">050XXXXXXX</div>
-            </div>
-          </a>
-          <a href="tel:997" class="hud-card p-3 rounded-2xl flex items-center gap-2.5 hover:border-rose-500/40 transition">
-            <div class="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400 text-xs">
-              <i class="fa-solid fa-truck-medical"></i>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white">الهلال الأحمر</div>
-              <div class="mono-data text-[10px] text-slate-400">997</div>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- الملف الطبي الحرج للمسعفين -->
-      <div class="hud-card p-4 rounded-2xl space-y-2">
-        <div class="flex items-center justify-between text-xs text-slate-300">
-          <span class="font-bold flex items-center gap-1.5 text-rose-400">
-            <i class="fa-solid fa-notes-medical"></i> الملف الصحي للمسعفين
-          </span>
-          <span class="mono-data text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">O+ POSITIVE</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
-          <div class="bg-black/30 p-2 rounded-xl border border-white/5">
-            <span class="text-slate-400 block text-[9px]">الحساسية:</span>
-            <span class="text-slate-200 font-semibold">لا توجد حساسية دوائية</span>
-          </div>
-          <div class="bg-black/30 p-2 rounded-xl border border-white/5">
-            <span class="text-slate-400 block text-[9px]">أمراض مزمنة:</span>
-            <span class="text-emerald-400 font-semibold">سليم ولله الحمد</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. MODULE: بطاقة السفر والمطار -->
-    <section id="module-travel" class="hidden space-y-3">
-      <!-- بطاقة تذكرة الصعود الرقمية التكتيكية -->
-      <div class="hud-card p-5 rounded-3xl space-y-4 border-amber-500/20 relative">
-        <div class="flex justify-between items-center text-xs text-amber-400">
-          <span class="font-bold tracking-wider">NEXT EXPEDITION</span>
-          <span class="mono-data font-mono">SV 1024</span>
-        </div>
-
-        <div class="flex justify-between items-center py-2 border-y border-white/10">
-          <div class="text-right">
-            <div class="mono-data text-2xl font-black text-white">RUH</div>
-            <div class="text-[10px] text-slate-400">الرياض - صالة 4</div>
-          </div>
-          <div class="flex flex-col items-center">
-            <i class="fa-solid fa-plane text-amber-400 text-sm"></i>
-            <span class="mono-data text-[9px] text-slate-500 mt-1">DIRECT</span>
-          </div>
-          <div class="text-left">
-            <div class="mono-data text-2xl font-black text-white">LHR</div>
-            <div class="text-[10px] text-slate-400">لندن هيثرو</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-2 text-center pt-1">
-          <div class="bg-black/30 p-2 rounded-xl">
-            <div class="text-[9px] text-slate-400">البوابة</div>
-            <div class="mono-data text-xs font-bold text-amber-300">B12</div>
-          </div>
-          <div class="bg-black/30 p-2 rounded-xl">
-            <div class="text-[9px] text-slate-400">المقعد</div>
-            <div class="mono-data text-xs font-bold text-amber-300">14A</div>
-          </div>
-          <div class="bg-black/30 p-2 rounded-xl">
-            <div class="text-[9px] text-slate-400">الصعود</div>
-            <div class="mono-data text-xs font-bold text-amber-300">08:15</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- فحص صلاحية الوثائق والتجهيز -->
-      <div class="grid grid-cols-2 gap-2.5">
-        <div class="hud-card p-4 rounded-2xl">
-          <div class="text-[10px] text-slate-400">صلاحية الجواز</div>
-          <div class="mono-data text-sm font-bold text-white mt-1">3.4 <span class="text-[10px] text-slate-400">سنوات</span></div>
-          <span class="text-[9px] text-emerald-400 font-mono mt-1 block">VALID FOR TRAVEL</span>
-        </div>
-        <div class="hud-card p-4 rounded-2xl flex flex-col justify-between">
-          <div class="text-[10px] text-slate-400">محول العملات</div>
-          <div class="mono-data text-xs font-bold text-amber-300 mt-1">1 GBP = 4.88 SAR</div>
-          <span class="text-[9px] text-slate-500 font-mono">LIVE MATRIX</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. MODULE: ميدالية الشنطة والأمتعة (Luggage Beacon) -->
-    <section id="module-luggage" class="hidden space-y-3">
-      <div class="hud-card p-5 rounded-3xl space-y-4 border-amber-500/20 text-center">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl">
-          <i class="fa-solid fa-suitcase-rolling"></i>
-        </div>
-
-        <div>
-          <h3 class="text-base font-bold text-white">نظام استرجاع الأمتعة الذكي</h3>
-          <p class="text-xs text-slate-400 mt-1">هذه الواجهة مخصصة لميدالية الـ NFC المعلقة على الحقيبة</p>
-        </div>
-
-        <!-- وضع الفقدان التفاعلي -->
-        <div class="bg-black/40 p-3.5 rounded-2xl border border-white/5 text-right space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-bold text-slate-200">وضع الحقيبة المفقودة (Lost Mode)</span>
-            <input type="checkbox" id="lostModeToggle" onchange="toggleLostMode()" class="toggle-checkbox w-5 h-5 accent-amber-500 rounded">
-          </div>
-          <p class="text-[10px] text-slate-400">عند تفعيله، سيظهر لمن يمسح الميدالية رسالة طوارئ فورية لاسترجاع الحقيبة ومكافأة الأمانة.</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 text-right">
-          <div class="hud-card p-3 rounded-xl">
-            <span class="text-[9px] text-slate-400 block">رمز قفل الحقيبة (TSA):</span>
-            <span class="mono-data text-sm font-bold text-amber-400">8 - 4 - 2</span>
-          </div>
-          <div class="hud-card p-3 rounded-xl">
-            <span class="text-[9px] text-slate-400 block">رقم ملصق الأمتعة:</span>
-            <span class="mono-data text-sm font-bold text-slate-200">SV-994102</span>
-          </div>
-        </div>
-
-        <button onclick="simulateLuggageScan()" class="w-full hud-card text-slate-300 py-2.5 rounded-xl text-xs hover:text-white transition">
-          <i class="fa-solid fa-eye text-amber-400 ml-1"></i> معاينة شاشة الشخص الذي يجد الشنطة
-        </button>
-      </div>
-    </section>
-
-    <!-- 5. MODULE: الخزنة المشفرة والوثائق (Classified Vault) -->
-    <section id="module-vault" class="hidden space-y-3">
+    <!-- 1. MODULE: بطاقة الوثائق والبنوك والخدمات الرسمية -->
+    <section id="module-vault" class="space-y-3">
       <div class="hud-card p-5 rounded-3xl space-y-4">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-amber-400 flex items-center gap-2">
-            <i class="fa-solid fa-shield-halved"></i> الخزنة الرقمية المشفرة
+            <i class="fa-solid fa-vault"></i> الخدمات الحكومية والبنكية
           </span>
-          <button onclick="toggleRedaction()" id="revealBtn" class="text-[10px] px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20 active:scale-95">
+          <button onclick="toggleRedaction()" id="revealBtn" class="text-[10px] px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20">
             <i class="fa-solid fa-eye-slash ml-1"></i> كشف الأرقام
           </button>
         </div>
 
-        <!-- الآيبان البنكي مع نسخ بنقرة -->
-        <div class="bg-black/40 p-3.5 rounded-2xl border border-white/5 space-y-1">
-          <div class="flex justify-between items-center text-[10px] text-slate-400">
-            <span>الحساب البنكي الدولي (IBAN) - مصرف الراجحي</span>
-            <button onclick="copyData('SA0380000000608010167519', 'تم نسخ الآيبان')" class="text-amber-400 hover:text-white">
-              <i class="fa-regular fa-copy"></i> نسخ
-            </button>
+        <!-- أزرار أبشر وتوكلنا -->
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="launchApp('absher://', 'https://www.absher.sa')" class="hud-card p-2.5 rounded-2xl flex items-center justify-start gap-2.5 hover:border-emerald-500/50 active:scale-95 transition bg-emerald-950/20 border-emerald-500/30">
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs">
+              <i class="fa-solid fa-fingerprint"></i>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-bold text-white">أبشر</div>
+              <div class="text-[9px] text-emerald-400 font-mono">ABSHER</div>
+            </div>
+          </button>
+
+          <button onclick="launchApp('tawakkalna://', 'https://tawakkalna.sdaia.gov.sa')" class="hud-card p-2.5 rounded-2xl flex items-center justify-start gap-2.5 hover:border-blue-500/50 active:scale-95 transition bg-blue-950/20 border-blue-500/30">
+            <div class="w-7 h-7 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-bold text-white">توكلنا</div>
+              <div class="text-[9px] text-blue-400 font-mono">TAWAKKALNA</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- أزرار البنوك: الراجحي والأهلي -->
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="launchApp('snbmobile://', 'https://www.alahli.com')" class="hud-card p-2.5 rounded-2xl flex items-center justify-start gap-2.5 hover:border-emerald-500/50 active:scale-95 transition bg-emerald-950/30 border-emerald-600/30">
+            <div class="w-7 h-7 rounded-lg bg-emerald-600/20 flex items-center justify-center text-emerald-400 text-xs font-bold">
+              <i class="fa-solid fa-landmark"></i>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-bold text-white">الأهلي SNB</div>
+              <div class="text-[9px] text-emerald-400 font-mono">AL AHLI</div>
+            </div>
+          </button>
+
+          <button onclick="launchApp('alrajhibank://', 'https://www.alrajhibank.com.sa')" class="hud-card p-2.5 rounded-2xl flex items-center justify-start gap-2.5 hover:border-blue-500/50 active:scale-95 transition bg-blue-950/30 border-blue-600/30">
+            <div class="w-7 h-7 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-400 text-xs font-bold">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-bold text-white">الراجحي</div>
+              <div class="text-[9px] text-blue-400 font-mono">AL RAJHI</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- البيانات البنكية الرسمية: البنك الأهلي السعودي -->
+        <div class="bg-black/40 p-4 rounded-2xl border border-emerald-500/20 space-y-3">
+          <div class="flex items-center justify-between border-b border-white/5 pb-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-building-columns text-emerald-400 text-xs"></i>
+              <span class="text-xs font-bold text-white">البنك الأهلي السعودي (SNB)</span>
+            </div>
+            <span class="text-[9px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">ACTIVE ACCOUNT</span>
           </div>
-          <div class="mono-data text-xs font-bold text-white redacted tracking-wider" id="ibanText">
-            SA03 8000 0000 6080 1016 7519
+
+          <!-- اسم صاحب الحساب -->
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block">اسم المستفيد / صاحب الحساب</span>
+            <span class="text-xs font-bold text-amber-300">نبيل محمد علي محمد</span>
+          </div>
+
+          <!-- الآيبان البنكي (IBAN) -->
+          <div class="space-y-1">
+            <div class="flex justify-between items-center text-[10px] text-slate-400">
+              <span>رقم الآيبان الدولي (IBAN)</span>
+              <button onclick="copyData('SA6710000011100050137605', 'تم نسخ الآيبان الدولي')" class="text-amber-400 hover:text-white flex items-center gap-1">
+                <i class="fa-regular fa-copy"></i> نسخ الآيبان
+              </button>
+            </div>
+            <div class="mono-data text-xs font-bold text-white redacted tracking-wider bg-black/60 p-2.5 rounded-xl border border-white/5" id="ibanText">
+              SA67 1000 0011 1000 5013 7605
+            </div>
+          </div>
+
+          <!-- رقم الحساب والسويفت كود -->
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <!-- رقم الحساب -->
+            <div class="bg-black/60 p-2.5 rounded-xl border border-white/5 space-y-1">
+              <div class="flex justify-between items-center text-[9px] text-slate-400">
+                <span>رقم الحساب</span>
+                <button onclick="copyData('11100050137605', 'تم نسخ رقم الحساب')" class="text-amber-400 hover:text-white">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+              </div>
+              <div class="mono-data text-xs font-bold text-white redacted" id="accNumberText">
+                11100050137605
+              </div>
+            </div>
+
+            <!-- رمز سويفت (SWIFT) -->
+            <div class="bg-black/60 p-2.5 rounded-xl border border-white/5 space-y-1">
+              <div class="flex justify-between items-center text-[9px] text-slate-400">
+                <span>رمز سويفت (SWIFT)</span>
+                <button onclick="copyData('NCBKSAJE', 'تم نسخ رمز سويفت')" class="text-amber-400 hover:text-white">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+              </div>
+              <div class="mono-data text-xs font-bold text-amber-300 redacted" id="swiftCodeText">
+                NCBKSAJE
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- الهوية الوطنية -->
-        <div class="bg-black/40 p-3.5 rounded-2xl border border-white/5 space-y-1">
-          <div class="flex justify-between items-center text-[10px] text-slate-400">
-            <span>الهوية الوطنية</span>
-            <button onclick="copyData('1000000000', 'تم نسخ رقم الهوية')" class="text-amber-400 hover:text-white">
-              <i class="fa-regular fa-copy"></i> نسخ
-            </button>
+        <!-- صور الجواز وبطاقة الأحوال -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <div class="bg-black/40 p-3 rounded-2xl border border-white/5 space-y-2 text-center relative">
+            <span class="text-[11px] font-bold text-slate-300 block text-right">صورة الجواز</span>
+            <div id="passportPreviewContainer" class="w-full h-24 rounded-xl bg-slate-900 border border-dashed border-slate-700 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative" onclick="triggerDocUpload('passportInput')">
+              <img id="passportImg" src="" alt="الجواز" class="hidden w-full h-full object-cover">
+              <div id="passportPlaceholder" class="flex flex-col items-center">
+                <i class="fa-solid fa-passport text-xl text-amber-400/60 mb-1"></i>
+                <span class="text-[9px] text-slate-500">اضغط لرفع الجواز</span>
+              </div>
+            </div>
+            <input type="file" id="passportInput" accept="image/*" class="hidden" onchange="handleDocImage(event, 'passport')">
+            <div id="passportActions" class="hidden flex justify-between pt-1 text-[10px]">
+              <button onclick="viewFullScreen('passport')" class="text-amber-400"><i class="fa-solid fa-expand"></i> تكبير</button>
+              <button onclick="removeDocImage('passport')" class="text-rose-400"><i class="fa-solid fa-trash"></i> حذف</button>
+            </div>
           </div>
-          <div class="mono-data text-xs font-bold text-white redacted tracking-wider" id="nationalIdText">
-            1000000000
+
+          <div class="bg-black/40 p-3 rounded-2xl border border-white/5 space-y-2 text-center relative">
+            <span class="text-[11px] font-bold text-slate-300 block text-right">بطاقة الأحوال</span>
+            <div id="nationalIdPreviewContainer" class="w-full h-24 rounded-xl bg-slate-900 border border-dashed border-slate-700 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative" onclick="triggerDocUpload('nationalIdInput')">
+              <img id="nationalIdImg" src="" alt="الهوية" class="hidden w-full h-full object-cover">
+              <div id="nationalIdPlaceholder" class="flex flex-col items-center">
+                <i class="fa-solid fa-id-card text-xl text-amber-400/60 mb-1"></i>
+                <span class="text-[9px] text-slate-500">اضغط لرفع الهوية</span>
+              </div>
+            </div>
+            <input type="file" id="nationalIdInput" accept="image/*" class="hidden" onchange="handleDocImage(event, 'nationalId')">
+            <div id="nationalIdActions" class="hidden flex justify-between pt-1 text-[10px]">
+              <button onclick="viewFullScreen('nationalId')" class="text-amber-400"><i class="fa-solid fa-expand"></i> تكبير</button>
+              <button onclick="removeDocImage('nationalId')" class="text-rose-400"><i class="fa-solid fa-trash"></i> حذف</button>
+            </div>
           </div>
         </div>
 
-        <!-- العنوان الوطني المختصر -->
-        <div class="bg-black/40 p-3.5 rounded-2xl border border-white/5 space-y-1">
-          <div class="flex justify-between items-center text-[10px] text-slate-400">
-            <span>العنوان الوطني المختصر</span>
-            <button onclick="copyData('RRRR2938', 'تم نسخ العنوان الوطني')" class="text-amber-400 hover:text-white">
-              <i class="fa-regular fa-copy"></i> نسخ
-            </button>
+      </div>
+    </section>
+
+    <!-- 2. MODULE: بطاقة السفر والرحلة (لوحة رقمية تفاعلية + مولد باركود QR) -->
+    <section id="module-travel" class="hidden space-y-3">
+      <div class="hud-card p-5 rounded-3xl space-y-4 border-amber-500/30">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-plane-departure"></i> بطاقة الصعود الرقمية (LIVE HUD)
+          </span>
+          <button onclick="editFlightDetails()" class="text-[10px] px-2 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20 active:scale-95">
+            <i class="fa-solid fa-pen-to-square ml-1"></i> تعديل الرحلة
+          </button>
+        </div>
+
+        <!-- مسار ومحطات الرحلة -->
+        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 space-y-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="mono-data text-xs text-amber-400 font-bold" id="flightNumber">SV 1024</span>
+              <span class="mono-data text-[10px] text-slate-400" id="flightPnrBadge">PNR: G7K9X2</span>
+            </div>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">CONFIRMED</span>
           </div>
-          <div class="mono-data text-xs font-bold text-white redacted tracking-wider" id="addressText">
-            RRRR2938
+
+          <div class="flex justify-between items-center py-1">
+            <div class="text-right">
+              <div class="mono-data text-2xl font-black text-white" id="originAirport">RUH</div>
+              <div class="text-[10px] text-slate-400" id="originCity">الرياض</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <i class="fa-solid fa-plane text-amber-400 text-sm"></i>
+              <span class="mono-data text-[9px] text-slate-500 mt-1">DIRECT</span>
+            </div>
+            <div class="text-left">
+              <div class="mono-data text-2xl font-black text-white" id="destAirport">LHR</div>
+              <div class="text-[10px] text-slate-400" id="destCity">لندن</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-white/5">
+            <div class="bg-slate-900/60 p-2 rounded-xl">
+              <div class="text-[9px] text-slate-400">البوابة</div>
+              <div class="mono-data text-xs font-bold text-amber-300" id="flightGate">B12</div>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-xl">
+              <div class="text-[9px] text-slate-400">المقعد</div>
+              <div class="mono-data text-xs font-bold text-amber-300" id="flightSeat">14A</div>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-xl">
+              <div class="text-[9px] text-slate-400">الصعود</div>
+              <div class="mono-data text-xs font-bold text-amber-300" id="flightBoarding">08:15</div>
+            </div>
           </div>
         </div>
 
-        <p class="text-[9px] text-slate-500 text-center font-mono">256-BIT LOCAL ENCRYPTION HASH</p>
+        <!-- مولد باركود QR الرقمي -->
+        <div class="bg-black/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center space-y-2">
+          <div class="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-qrcode text-amber-400"></i> رمز الصعود والتحقق السريع (Scan Pass)
+          </div>
+          <div id="qrcodeContainer" class="p-2.5 bg-white rounded-xl shadow-lg cursor-pointer transition active:scale-95" onclick="zoomQRCode()" title="اضغط للتكبير"></div>
+          <p class="text-[9px] text-slate-400 font-mono" id="qrDataLabel">DATA: SV1024-G7K9X2-14A</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="openWalletOrPass()" class="gold-glow-btn text-black py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 active:scale-95">
+            <i class="fa-solid fa-wallet"></i> المحفظة (Wallet)
+          </button>
+          <button onclick="trackFlightLive()" class="hud-card text-white py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 hover:border-amber-500/40">
+            <i class="fa-solid fa-radar text-amber-400"></i> تتبع الرحلة
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. MODULE: المركبة ورخصة القيادة -->
+    <section id="module-vehicle" class="hidden space-y-3">
+      <div class="hud-card p-5 rounded-3xl space-y-3">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-address-card"></i> رخصة القيادة
+          </span>
+          <span class="text-[9px] text-slate-500 font-mono">DIGITAL DRIVER LICENSE</span>
+        </div>
+        <div id="licensePreviewContainer" class="w-full h-32 rounded-xl bg-slate-900 border border-dashed border-slate-700 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative" onclick="triggerDocUpload('licenseInput')">
+          <img id="licenseImg" src="" alt="رخصة القيادة" class="hidden w-full h-full object-cover">
+          <div id="licensePlaceholder" class="flex flex-col items-center">
+            <i class="fa-solid fa-id-badge text-2xl text-amber-400/60 mb-1"></i>
+            <span class="text-xs text-slate-400">اضغط لرفع صورة رخصة القيادة</span>
+          </div>
+        </div>
+        <input type="file" id="licenseInput" accept="image/*" class="hidden" onchange="handleDocImage(event, 'license')">
+        <div id="licenseActions" class="hidden flex justify-between pt-1 text-xs">
+          <button onclick="viewFullScreen('license')" class="text-amber-400 font-bold"><i class="fa-solid fa-expand"></i> عرض الرخصة كاملة</button>
+          <button onclick="removeDocImage('license')" class="text-rose-400"><i class="fa-solid fa-trash"></i> حذف الرخصة</button>
+        </div>
+      </div>
+
+      <div class="hud-card p-4 rounded-2xl flex items-center justify-between">
+        <div>
+          <div class="text-xs font-bold text-white">رادار موقع المركبة</div>
+          <div class="mono-data text-[10px] text-slate-400" id="carCoords">--.------, --.------</div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="saveCarGPS()" class="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold">
+            حفظ الموقف
+          </button>
+          <button onclick="openCarRoute()" class="px-3 py-1.5 rounded-xl hud-card text-white text-xs">
+            ملاحة
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. MODULE: الطوارئ والاستغاثة -->
+    <section id="module-emergency" class="hidden space-y-3">
+      <div class="hud-card p-5 rounded-3xl border-rose-500/30 text-center space-y-3">
+        <button onclick="broadcastEmergencySOS()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 to-rose-700 text-white font-black text-sm tracking-wider flex items-center justify-center gap-2">
+          <i class="fa-solid fa-tower-broadcast text-lg animate-pulse"></i> بث نداء استغاثة فوري (GPS)
+        </button>
+        <div class="grid grid-cols-2 gap-2 pt-2">
+          <a href="tel:997" class="hud-card p-3 rounded-2xl flex items-center justify-center gap-2 text-xs text-white">
+            <i class="fa-solid fa-truck-medical text-rose-400"></i> الهلال الأحمر (997)
+          </a>
+          <a href="tel:993" class="hud-card p-3 rounded-2xl flex items-center justify-center gap-2 text-xs text-white">
+            <i class="fa-solid fa-car-burst text-rose-400"></i> المرور (993)
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. MODULE: الأمتعة -->
+    <section id="module-luggage" class="hidden space-y-3">
+      <div class="hud-card p-5 rounded-3xl space-y-3 text-center">
+        <i class="fa-solid fa-suitcase-rolling text-2xl text-amber-400"></i>
+        <h3 class="text-sm font-bold text-white">استرجاع الحقيبة المفقودة</h3>
+        <p class="text-xs text-slate-400">مربوطة بميدالية الحقيبة الذكية بالـ NFC</p>
       </div>
     </section>
 
   </main>
 
-  <!-- Modal: شاشة استرجاع الحقيبة للغريب عند المسح -->
-  <div id="lostLuggageModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="hud-card max-w-sm w-full p-6 rounded-3xl space-y-4 text-center border-amber-500/40">
-      <div class="w-16 h-16 rounded-2xl bg-amber-500/20 mx-auto flex items-center justify-center text-amber-400 text-2xl">
-        <i class="fa-solid fa-hand-holding-heart"></i>
-      </div>
-      <div>
-        <h3 class="text-base font-bold text-white">حقيبة مفقودة / LOST LUGGAGE</h3>
-        <p class="text-xs text-slate-300 mt-1">شكراً لأمانتك! هذه الحقيبة تعود لـ <span class="text-amber-400 font-bold">نبيل النمر</span></p>
-      </div>
-
-      <div class="space-y-2 pt-2">
-        <a href="https://wa.me/966502777884?text=مرحباً، لقد عثرت على حقيبتك الخاصة برحلة السفر." target="_blank" class="w-full gold-glow-btn text-black py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
-          <i class="fa-brands fa-whatsapp text-sm"></i> مراسلة المالك فوراً عبر واتساب
-        </a>
-        <a href="tel:+966502777884" class="w-full hud-card text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
-          <i class="fa-solid fa-phone text-amber-400"></i> اتصال بالمالك
-        </a>
-      </div>
-
-      <button onclick="closeLuggageModal()" class="text-xs text-slate-500 hover:text-white pt-2">
-        إغلاق المعاينة
-      </button>
+  <!-- نافذة التكبير بملء الشاشة لعرض الوثائق أو باركود الصعود -->
+  <div id="fullScreenViewer" class="hidden fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4">
+    <button onclick="closeFullScreen()" class="absolute top-5 right-5 text-white text-lg bg-slate-800/80 w-10 h-10 rounded-full flex items-center justify-center border border-white/20">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div id="fullScreenContent" class="flex flex-col items-center">
+      <img id="fullScreenImg" src="" class="max-w-full max-h-[85vh] object-contain rounded-2xl border border-amber-500/30">
     </div>
+    <div id="fullScreenLabel" class="text-xs font-mono text-amber-400 mt-3 tracking-wider">DOCUMENT VIEWER</div>
   </div>
 
   <script>
-    // --- المحرك الصوتي التكتيكي (Tactile Audio Synthesizer) ---
-    let audioCtx = null;
-    let isSoundEnabled = true;
-
-    function playBeep(freq = 800, duration = 0.04) {
-      if (!isSoundEnabled) return;
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function toggleAudio() {
-      isSoundEnabled = !isSoundEnabled;
-      const icon = document.querySelector('#soundToggle i');
-      icon.className = isSoundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
-      if (isSoundEnabled) playBeep(1000, 0.05);
-    }
-
-    // --- إدارة الهوية والبطاقات المعيارية ---
     let isOwner = localStorage.getItem('smart_pass_owner') !== 'false';
     let isDataRevealed = false;
+    let qrInstance = null;
 
     window.addEventListener('DOMContentLoaded', () => {
-      checkQueryParameters();
-      loadStoredVehicleLocation();
+      loadStoredImages();
+      loadFlightDetails();
       updateAuthUI();
+      loadStoredVehicleLocation();
     });
 
-    function checkQueryParameters() {
-      const params = new URLSearchParams(window.location.search);
-      const mode = params.get('mode');
-      if (mode === 'visitor') isOwner = false;
-      else if (mode === 'luggage') simulateLuggageScan();
-      else if (mode) setActiveCard(mode);
+    // تشغيل التطبيقات البنكية والحكومية عبر الروابط المباشرة
+    function launchApp(deepLink, fallbackWebUrl) {
+      const now = Date.now();
+      window.location.href = deepLink;
+      
+      setTimeout(() => {
+        if (Date.now() - now < 2000) {
+          window.open(fallbackWebUrl, '_blank');
+        }
+      }, 1500);
+    }
+
+    // توليد باركود QR لبطاقة الصعود
+    function generateBoardingQRCode(payload) {
+      const container = document.getElementById('qrcodeContainer');
+      container.innerHTML = '';
+      qrInstance = new QRCode(container, {
+        text: payload,
+        width: 140,
+        height: 140,
+        colorDark: "#030712",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      document.getElementById('qrDataLabel').textContent = `CODE: ${payload}`;
+    }
+
+    function zoomQRCode() {
+      const qrCanvas = document.querySelector('#qrcodeContainer canvas') || document.querySelector('#qrcodeContainer img');
+      if (qrCanvas) {
+        const fullImg = document.getElementById('fullScreenImg');
+        fullImg.src = qrCanvas.src || qrCanvas.toDataURL();
+        document.getElementById('fullScreenLabel').textContent = 'BOARDING PASS SCANNER (HIGH BRIGHTNESS)';
+        document.getElementById('fullScreenViewer').classList.remove('hidden');
+      }
+    }
+
+    // إدارة وتعديل الرحلة
+    function editFlightDetails() {
+      const fn = prompt('رقم الرحلة:', document.getElementById('flightNumber').textContent) || 'SV 1024';
+      const pnr = prompt('رقم الحجز (PNR):', 'G7K9X2') || 'G7K9X2';
+      const orig = prompt('مطار المغادرة (3 أحرف):', document.getElementById('originAirport').textContent) || 'RUH';
+      const dest = prompt('مطار الوصول (3 أحرف):', document.getElementById('destAirport').textContent) || 'LHR';
+      const gate = prompt('البوابة (Gate):', document.getElementById('flightGate').textContent) || 'B12';
+      const seat = prompt('رقم المقعد (Seat):', document.getElementById('flightSeat').textContent) || '14A';
+      const time = prompt('وقت الصعود (Boarding):', document.getElementById('flightBoarding').textContent) || '08:15';
+
+      const flightData = { fn, pnr, orig, dest, gate, seat, time };
+      localStorage.setItem('flight_data', JSON.stringify(flightData));
+      renderFlightData(flightData);
+    }
+
+    function loadFlightDetails() {
+      const saved = localStorage.getItem('flight_data');
+      if (saved) {
+        renderFlightData(JSON.parse(saved));
+      } else {
+        renderFlightData({ fn: 'SV 1024', pnr: 'G7K9X2', orig: 'RUH', dest: 'LHR', gate: 'B12', seat: '14A', time: '08:15' });
+      }
+    }
+
+    function renderFlightData(d) {
+      if (!d) return;
+      document.getElementById('flightNumber').textContent = d.fn || 'SV 1024';
+      document.getElementById('flightPnrBadge').textContent = `PNR: ${d.pnr || 'G7K9X2'}`;
+      document.getElementById('originAirport').textContent = d.orig || 'RUH';
+      document.getElementById('destAirport').textContent = d.dest || 'LHR';
+      document.getElementById('flightGate').textContent = d.gate || 'B12';
+      document.getElementById('flightSeat').textContent = d.seat || '14A';
+      document.getElementById('flightBoarding').textContent = d.time || '08:15';
+
+      const qrPayload = `M1${d.fn.replace(/\s+/g, '')}/${d.pnr}/${d.orig}${d.dest}/${d.seat}`;
+      generateBoardingQRCode(qrPayload);
+    }
+
+    function openWalletOrPass() {
+      window.location.href = 'shoebox://';
+      setTimeout(() => {
+        alert('يمكنك أيضاً إبراز الباركود الموجود أعلاه للمسح الضوئي المباشر عند البوابة.');
+      }, 500);
+    }
+
+    function trackFlightLive() {
+      const fn = document.getElementById('flightNumber').textContent.trim();
+      window.open(`https://www.google.com/search?q=flight+${encodeURIComponent(fn)}`, '_blank');
+    }
+
+    // إدارة الصور والوثائق
+    function triggerDocUpload(inputId) {
+      document.getElementById(inputId).click();
+    }
+
+    function handleDocImage(event, key) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1200;
+          let w = img.width;
+          let h = img.height;
+          if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const base64Compressed = canvas.toDataURL('image/jpeg', 0.82);
+
+          try {
+            localStorage.setItem(`doc_img_${key}`, base64Compressed);
+            renderDocImage(key, base64Compressed);
+          } catch (err) {
+            alert('حجم الصورة كبير جداً، يرجى اختيار صورة أخرى.');
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderDocImage(key, base64) {
+      const imgEl = document.getElementById(`${key}Img`);
+      const placeholder = document.getElementById(`${key}Placeholder`);
+      const actions = document.getElementById(`${key}Actions`);
+      if (base64) {
+        imgEl.src = base64;
+        imgEl.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+        if (actions) actions.classList.remove('hidden');
+      } else {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (actions) actions.classList.add('hidden');
+      }
+    }
+
+    function removeDocImage(key) {
+      if (confirm('هل تريد حذف هذه الوثيقة؟')) {
+        localStorage.removeItem(`doc_img_${key}`);
+        renderDocImage(key, null);
+      }
+    }
+
+    function loadStoredImages() {
+      ['passport', 'nationalId', 'license'].forEach(key => {
+        const saved = localStorage.getItem(`doc_img_${key}`);
+        if (saved) renderDocImage(key, saved);
+      });
+    }
+
+    function viewFullScreen(key) {
+      const saved = localStorage.getItem(`doc_img_${key}`);
+      if (!saved) return;
+      document.getElementById('fullScreenImg').src = saved;
+      document.getElementById('fullScreenLabel').textContent = key.toUpperCase() + ' DOCUMENT';
+      document.getElementById('fullScreenViewer').classList.remove('hidden');
+    }
+
+    function closeFullScreen() {
+      document.getElementById('fullScreenViewer').classList.add('hidden');
+    }
+
+    function setActiveCard(cardName) {
+      ['vault', 'travel', 'vehicle', 'emergency', 'luggage'].forEach(m => {
+        const el = document.getElementById(`module-${m}`);
+        if (el) el.classList.toggle('hidden', m !== cardName);
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        const match = btn.getAttribute('data-card') === cardName;
+        btn.classList.toggle('border-amber-500/40', match);
+        btn.classList.toggle('text-amber-400', match);
+        btn.classList.toggle('text-slate-400', !match);
+      });
     }
 
     function toggleOwnerMode() {
-      playBeep(600, 0.06);
       isOwner = !isOwner;
       localStorage.setItem('smart_pass_owner', isOwner);
       updateAuthUI();
@@ -524,139 +643,53 @@
       document.getElementById('authBadge').textContent = isOwner ? 'المالك' : 'زائر';
     }
 
-    function setActiveCard(cardName) {
-      playBeep(900, 0.04);
-      const modules = ['vehicle', 'emergency', 'travel', 'luggage', 'vault'];
-      modules.forEach(m => {
-        const el = document.getElementById(`module-${m}`);
-        if (el) el.classList.toggle('hidden', m !== cardName);
+    function toggleRedaction() {
+      isDataRevealed = !isDataRevealed;
+      const ids = ['ibanText', 'accNumberText', 'swiftCodeText'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('redacted', !isDataRevealed);
       });
-
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        const match = btn.getAttribute('data-card') === cardName;
-        btn.classList.toggle('border-amber-500/40', match);
-        btn.classList.toggle('text-amber-400', match);
-        btn.classList.toggle('text-slate-400', !match);
-      });
+      document.getElementById('revealBtn').innerHTML = isDataRevealed ? '<i class="fa-solid fa-eye ml-1"></i> حجب الأرقام' : '<i class="fa-solid fa-eye-slash ml-1"></i> كشف الأرقام';
     }
 
-    // --- وظائف بطاقة المركبة ---
+    function copyData(text, msg) {
+      navigator.clipboard.writeText(text).then(() => alert(msg));
+    }
+
     function saveCarGPS() {
-      playBeep(1200, 0.08);
-      if (!navigator.geolocation) return alert('الوصول إلى نظام GPS غير متاح');
+      if (!navigator.geolocation) return alert('GPS غير مدعوم');
       navigator.geolocation.getCurrentPosition(pos => {
-        const lat = pos.coords.latitude.toFixed(6);
-        const lng = pos.coords.longitude.toFixed(6);
-        const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-        localStorage.setItem('car_gps_coords', `${lat},${lng}`);
-        localStorage.setItem('car_gps_time', time);
+        const coords = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
+        localStorage.setItem('car_gps_coords', coords);
         loadStoredVehicleLocation();
-        alert('تم حفظ إحداثيات رادار المركبة بنجاح!');
-      }, () => alert('يرجى تفعيل إذن الوصول للموقع في المتصفح'));
+        alert('تم حفظ موقع السيارة بنجاح!');
+      });
     }
 
     function loadStoredVehicleLocation() {
       const coords = localStorage.getItem('car_gps_coords');
-      const time = localStorage.getItem('car_gps_time');
-      if (coords) {
-        document.getElementById('carCoords').textContent = coords;
-        document.getElementById('parkingTime').textContent = `تحديث: ${time}`;
-        document.getElementById('carStatusLabel').textContent = 'الموقع مثبت في الرادار';
-      }
+      if (coords) document.getElementById('carCoords').textContent = coords;
     }
 
     function openCarRoute() {
-      playBeep(900, 0.05);
       const coords = localStorage.getItem('car_gps_coords');
-      if (coords) {
-        window.open(`https://www.google.com/maps/search/?api=1&query=${coords}`, '_blank');
-      } else {
-        alert('لم يتم تثبيت موقع المركبة بعد. اضغط "تثبيت الموقف هنا".');
-      }
+      if (coords) window.open(`https://www.google.com/maps/search/?api=1&query=${coords}`, '_blank');
+      else alert('لم يتم حفظ الموقف بعد.');
     }
 
-    function locateCar() {
-      openCarRoute();
-    }
-
-    function logFuelQuick() {
-      playBeep(1100, 0.05);
-      const amt = prompt('أدخل قيمة تعبئة الوقود (ر.س):', '100');
-      if (amt) alert(`تم تسجيل ${amt} ر.س في دفتر المصروفات.`);
-    }
-
-    // --- وظائف الطوارئ والاستغاثة SOS ---
     function broadcastEmergencySOS() {
-      playBeep(400, 0.2);
-      if (!navigator.geolocation) {
-        sendSOSMessage('موقعي غير محدد بدقة');
-        return;
-      }
       navigator.geolocation.getCurrentPosition(pos => {
         const link = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        sendSOSMessage(link);
-      }, () => sendSOSMessage('تعذر جلب إحداثيات GPS'));
-    }
-
-    function sendSOSMessage(locationUrl) {
-      const msg = encodeURIComponent(`🚨 نداء استغاثة طارئ! أنا بحاجة للمساعدة العاجلة بموقعي الحالي:\n${locationUrl}`);
-      window.open(`https://wa.me/966502777884?text=${msg}`, '_blank');
-    }
-
-    // --- وظائف استرجاع الأمتعة المشفرة ---
-    function toggleLostMode() {
-      playBeep(850, 0.04);
-      const isChecked = document.getElementById('lostModeToggle').checked;
-      localStorage.setItem('luggage_lost_mode', isChecked);
-    }
-
-    function simulateLuggageScan() {
-      playBeep(1000, 0.06);
-      document.getElementById('lostLuggageModal').classList.remove('hidden');
-    }
-
-    function closeLuggageModal() {
-      document.getElementById('lostLuggageModal').classList.add('hidden');
-    }
-
-    // --- وظائف الخزنة المشفرة ---
-    function toggleRedaction() {
-      playBeep(1050, 0.04);
-      isDataRevealed = !isDataRevealed;
-      const ids = ['ibanText', 'nationalIdText', 'addressText'];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.classList.toggle('redacted', !isDataRevealed);
-          el.classList.toggle('revealed', isDataRevealed);
-        }
-      });
-      document.getElementById('revealBtn').innerHTML = isDataRevealed 
-        ? '<i class="fa-solid fa-eye ml-1"></i> حجب الأرقام' 
-        : '<i class="fa-solid fa-eye-slash ml-1"></i> كشف الأرقام';
-    }
-
-    function copyData(text, alertMsg) {
-      playBeep(1200, 0.05);
-      navigator.clipboard.writeText(text).then(() => {
-        alert(alertMsg);
-      });
+        window.open(`https://wa.me/966502777884?text=${encodeURIComponent('🚨 استغاثة طارئة:\n' + link)}`, '_blank');
+      }, () => alert('يرجى تفعيل صلاحية الموقع'));
     }
 
     function downloadVCard() {
-      playBeep(1100, 0.06);
-      const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN;CHARSET=UTF-8:نبيل النمر
-TITLE;CHARSET=UTF-8:اختصاصي تسويق
-TEL;TYPE=CELL,VOICE:+966502777884
-ADR;TYPE=WORK;CHARSET=UTF-8:;;الرياض;المملكة العربية السعودية;;;
-NOTE;CHARSET=UTF-8:البطاقة التكتيكية الذكية
-END:VCARD`;
+      const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:نبيل محمد علي محمد\nTITLE;CHARSET=UTF-8:اختصاصي تسويق\nTEL;TYPE=CELL,VOICE:+966502777884\nADR;TYPE=WORK;CHARSET=UTF-8:;;الرياض;المملكة العربية السعودية;;;\nEND:VCARD`;
       const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
+      a.href = URL.createObjectURL(blob);
       a.download = 'Nabil_Alnamer.vcf';
       a.click();
     }
