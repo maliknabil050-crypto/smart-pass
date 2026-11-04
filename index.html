@@ -437,46 +437,81 @@
 
   <script>
     // ==========================================
-    // ⚙️ إعدادات المستخدم الشخصية (CONFIG PROFILE)
-    // قم بتعديل هذه القيم فقط لكل شخص جديد:
+    // ⚙️ إعداداتك الافتراضية الثابتة (DEFAULT PROFILE)
+    // ستعمل تلقائياً إذا فُتح الرابط بدون معلمات
     // ==========================================
-    const CONFIG = {
+    const DEFAULT_CONFIG = {
       fullName: "نبيل محمد علي محمد",
       shortNameEn: "NABIL ALNAMER",
       initials: "NA",
       jobTitleEn: "MARKETING SPECIALIST",
       city: "الرياض، المملكة العربية السعودية",
       phone: "+966502777884",
-      whatsappNumber: "966502777884", // بدون علامة +
+      whatsappNumber: "966502777884",
       bankName: "البنك الأهلي السعودي (SNB)",
       iban: "SA6710000011100050137605",
       accountNumber: "11100050137605",
       swiftCode: "NCBKSAJE"
     };
 
-    // حقن البيانات تلقائياً في الواجهة
-    function applyUserProfile() {
-      document.getElementById('headerOwnerName').textContent = CONFIG.shortNameEn;
-      document.getElementById('visitorFullName').textContent = CONFIG.fullName;
-      document.getElementById('visitorJobTitle').textContent = CONFIG.jobTitleEn;
-      document.getElementById('visitorCity').textContent = CONFIG.city;
-      document.getElementById('visitorInitials').textContent = CONFIG.initials;
-      document.getElementById('visitorCallBtn').href = `tel:${CONFIG.phone}`;
-      document.getElementById('visitorWhatsappBtn').href = `https://wa.me/${CONFIG.whatsappNumber}`;
+    // كائن الإعدادات النشط الذي يتم ملؤه من الرابط
+    let ACTIVE_CONFIG = { ...DEFAULT_CONFIG };
 
-      document.getElementById('bankNameTitle').textContent = CONFIG.bankName;
-      document.getElementById('bankBeneficiaryName').textContent = CONFIG.fullName;
+    // محرك قراءة المعلمات الديناميكي من رابط الـ NFC
+    function loadConfigFromURL() {
+      const p = new URLSearchParams(window.location.search);
+      
+      // إذا وجد الرابط معلمات، يستبدلها فوراً
+      if (p.has('name')) ACTIVE_CONFIG.fullName = p.get('name');
+      if (p.has('shortName')) ACTIVE_CONFIG.shortNameEn = p.get('shortName');
+      else if (p.has('name')) ACTIVE_CONFIG.shortNameEn = p.get('name');
+
+      if (p.has('title')) ACTIVE_CONFIG.jobTitleEn = p.get('title');
+      if (p.has('city')) ACTIVE_CONFIG.city = p.get('city');
+      
+      if (p.has('phone')) {
+        let ph = p.get('phone').trim();
+        ACTIVE_CONFIG.whatsappNumber = ph.replace(/[^0-9]/g, '');
+        ACTIVE_CONFIG.phone = ph.startsWith('+') ? ph : `+${ph}`;
+      }
+
+      if (p.has('bank')) ACTIVE_CONFIG.bankName = p.get('bank');
+      if (p.has('iban')) ACTIVE_CONFIG.iban = p.get('iban').replace(/\s+/g, '');
+      if (p.has('acc')) ACTIVE_CONFIG.accountNumber = p.get('acc');
+      if (p.has('swift')) ACTIVE_CONFIG.swiftCode = p.get('swift');
+
+      // استخراج الأحرف الأولى للشعار
+      const words = ACTIVE_CONFIG.fullName.split(' ').filter(Boolean);
+      if (words.length >= 2) {
+        ACTIVE_CONFIG.initials = (words[0][0] + words[1][0]).toUpperCase();
+      } else if (words.length === 1) {
+        ACTIVE_CONFIG.initials = words[0].slice(0, 2).toUpperCase();
+      }
+    }
+
+    // حقن البيانات في عناصر الصفحة
+    function applyUserProfile() {
+      document.getElementById('headerOwnerName').textContent = ACTIVE_CONFIG.shortNameEn;
+      document.getElementById('visitorFullName').textContent = ACTIVE_CONFIG.fullName;
+      document.getElementById('visitorJobTitle').textContent = ACTIVE_CONFIG.jobTitleEn;
+      document.getElementById('visitorCity').textContent = ACTIVE_CONFIG.city;
+      document.getElementById('visitorInitials').textContent = ACTIVE_CONFIG.initials;
+      document.getElementById('visitorCallBtn').href = `tel:${ACTIVE_CONFIG.phone}`;
+      document.getElementById('visitorWhatsappBtn').href = `https://wa.me/${ACTIVE_CONFIG.whatsappNumber}`;
+
+      document.getElementById('bankNameTitle').textContent = ACTIVE_CONFIG.bankName;
+      document.getElementById('bankBeneficiaryName').textContent = ACTIVE_CONFIG.fullName;
 
       // تنسيق الآيبان بفواصل جمالية
-      const formattedIban = CONFIG.iban.replace(/(.{4})/g, '$1 ').trim();
+      const formattedIban = ACTIVE_CONFIG.iban.replace(/(.{4})/g, '$1 ').trim();
       document.getElementById('ibanText').textContent = formattedIban;
-      document.getElementById('accNumberText').textContent = CONFIG.accountNumber;
-      document.getElementById('swiftCodeText').textContent = CONFIG.swiftCode;
+      document.getElementById('accNumberText').textContent = ACTIVE_CONFIG.accountNumber;
+      document.getElementById('swiftCodeText').textContent = ACTIVE_CONFIG.swiftCode;
     }
 
     function copyDynamicData(field, msg) {
-      if (CONFIG[field]) {
-        copyData(CONFIG[field], msg);
+      if (ACTIVE_CONFIG[field]) {
+        copyData(ACTIVE_CONFIG[field], msg);
       }
     }
 
@@ -485,6 +520,7 @@
     let qrInstance = null;
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadConfigFromURL();
       applyUserProfile();
       loadStoredImages();
       loadFlightDetails();
@@ -716,16 +752,16 @@
     function broadcastEmergencySOS() {
       navigator.geolocation.getCurrentPosition(pos => {
         const link = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent('🚨 استغاثة طارئة:\n' + link)}`, '_blank');
+        window.open(`https://wa.me/${ACTIVE_CONFIG.whatsappNumber}?text=${encodeURIComponent('🚨 استغاثة طارئة:\n' + link)}`, '_blank');
       }, () => alert('يرجى تفعيل صلاحية الموقع'));
     }
 
     function downloadVCard() {
-      const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:${CONFIG.fullName}\nTITLE;CHARSET=UTF-8:${CONFIG.jobTitleEn}\nTEL;TYPE=CELL,VOICE:${CONFIG.phone}\nADR;TYPE=WORK;CHARSET=UTF-8:;;${CONFIG.city};;;\nEND:VCARD`;
+      const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:${ACTIVE_CONFIG.fullName}\nTITLE;CHARSET=UTF-8:${ACTIVE_CONFIG.jobTitleEn}\nTEL;TYPE=CELL,VOICE:${ACTIVE_CONFIG.phone}\nADR;TYPE=WORK;CHARSET=UTF-8:;;${ACTIVE_CONFIG.city};;;\nEND:VCARD`;
       const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `${CONFIG.shortNameEn.replace(/\s+/g, '_')}.vcf`;
+      a.download = `${ACTIVE_CONFIG.shortNameEn.replace(/\s+/g, '_')}.vcf`;
       a.click();
     }
   </script>
