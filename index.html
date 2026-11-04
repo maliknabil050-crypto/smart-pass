@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#030712">
-  <title>NABIL ALNAMER | EXECUTIVE TACTICAL SUITE</title>
+  <title>EXECUTIVE TACTICAL SUITE</title>
 
   <!-- Tailwind & Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -72,7 +72,7 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <span class="mono-data text-xs tracking-widest text-amber-400 font-bold">NABIL ALNAMER</span>
+          <span class="mono-data text-xs tracking-widest text-amber-400 font-bold" id="headerOwnerName">NABIL ALNAMER</span>
           <span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">SYS-NFC</span>
         </div>
         <p class="text-[10px] text-slate-500 font-mono tracking-wider">SECURE IDENTITY MATRIX</p>
@@ -91,18 +91,18 @@
   <main id="visitorView" class="hidden p-4 max-w-sm mx-auto space-y-4 pt-6">
     <div class="hud-card p-6 rounded-3xl text-center relative overflow-hidden border-amber-500/30">
       <div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600/30 to-amber-400/10 border border-amber-500/40 p-1 flex items-center justify-center mb-4">
-        <span class="mono-data text-2xl font-bold text-amber-400 tracking-tighter">NA</span>
+        <span class="mono-data text-2xl font-bold text-amber-400 tracking-tighter" id="visitorInitials">NA</span>
       </div>
-      <h2 class="text-lg font-bold text-white tracking-wide">نبيل محمد علي محمد</h2>
-      <p class="text-xs text-amber-400 font-mono mt-0.5">MARKETING SPECIALIST</p>
+      <h2 class="text-lg font-bold text-white tracking-wide" id="visitorFullName">نبيل محمد علي محمد</h2>
+      <p class="text-xs text-amber-400 font-mono mt-0.5" id="visitorJobTitle">MARKETING SPECIALIST</p>
       <p class="text-[11px] text-slate-400 mt-2 flex items-center justify-center gap-1">
-        <i class="fa-solid fa-location-dot text-rose-500"></i> الرياض، المملكة العربية السعودية
+        <i class="fa-solid fa-location-dot text-rose-500"></i> <span id="visitorCity">الرياض، المملكة العربية السعودية</span>
       </p>
       <div class="grid grid-cols-2 gap-2.5 mt-5">
-        <a href="tel:+966502777884" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200">
+        <a id="visitorCallBtn" href="tel:+966502777884" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200">
           <i class="fa-solid fa-phone text-amber-400"></i> اتصال
         </a>
-        <a href="https://wa.me/966502777884" target="_blank" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200">
+        <a id="visitorWhatsappBtn" href="https://wa.me/966502777884" target="_blank" class="hud-card p-2.5 rounded-xl flex items-center justify-center gap-2 text-xs text-slate-200">
           <i class="fa-brands fa-whatsapp text-emerald-400"></i> واتساب
         </a>
       </div>
@@ -192,60 +192,57 @@
           </button>
         </div>
 
-        <!-- البيانات البنكية الرسمية: البنك الأهلي السعودي -->
+        <!-- البيانات البنكية الرسمية -->
         <div class="bg-black/40 p-4 rounded-2xl border border-emerald-500/20 space-y-3">
           <div class="flex items-center justify-between border-b border-white/5 pb-2">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-building-columns text-emerald-400 text-xs"></i>
-              <span class="text-xs font-bold text-white">البنك الأهلي السعودي (SNB)</span>
+              <span class="text-xs font-bold text-white" id="bankNameTitle">البنك الأهلي السعودي (SNB)</span>
             </div>
             <span class="text-[9px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">ACTIVE ACCOUNT</span>
           </div>
 
-          <!-- اسم صاحب الحساب -->
           <div class="text-right">
             <span class="text-[10px] text-slate-400 block">اسم المستفيد / صاحب الحساب</span>
-            <span class="text-xs font-bold text-amber-300">نبيل محمد علي محمد</span>
+            <span class="text-xs font-bold text-amber-300" id="bankBeneficiaryName">نبيل محمد علي محمد</span>
           </div>
 
           <!-- الآيبان البنكي (IBAN) -->
           <div class="space-y-1">
             <div class="flex justify-between items-center text-[10px] text-slate-400">
               <span>رقم الآيبان الدولي (IBAN)</span>
-              <button onclick="copyData('SA6710000011100050137605', 'تم نسخ الآيبان الدولي')" class="text-amber-400 hover:text-white flex items-center gap-1">
+              <button onclick="copyDynamicData('iban', 'تم نسخ الآيبان الدولي')" class="text-amber-400 hover:text-white flex items-center gap-1">
                 <i class="fa-regular fa-copy"></i> نسخ الآيبان
               </button>
             </div>
             <div class="mono-data text-xs font-bold text-white redacted tracking-wider bg-black/60 p-2.5 rounded-xl border border-white/5" id="ibanText">
-              SA67 1000 0011 1000 5013 7605
+              ------------------------
             </div>
           </div>
 
           <!-- رقم الحساب والسويفت كود -->
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <!-- رقم الحساب -->
             <div class="bg-black/60 p-2.5 rounded-xl border border-white/5 space-y-1">
               <div class="flex justify-between items-center text-[9px] text-slate-400">
                 <span>رقم الحساب</span>
-                <button onclick="copyData('11100050137605', 'تم نسخ رقم الحساب')" class="text-amber-400 hover:text-white">
+                <button onclick="copyDynamicData('accountNumber', 'تم نسخ رقم الحساب')" class="text-amber-400 hover:text-white">
                   <i class="fa-regular fa-copy"></i>
                 </button>
               </div>
               <div class="mono-data text-xs font-bold text-white redacted" id="accNumberText">
-                11100050137605
+                --------------
               </div>
             </div>
 
-            <!-- رمز سويفت (SWIFT) -->
             <div class="bg-black/60 p-2.5 rounded-xl border border-white/5 space-y-1">
               <div class="flex justify-between items-center text-[9px] text-slate-400">
                 <span>رمز سويفت (SWIFT)</span>
-                <button onclick="copyData('NCBKSAJE', 'تم نسخ رمز سويفت')" class="text-amber-400 hover:text-white">
+                <button onclick="copyDynamicData('swiftCode', 'تم نسخ رمز سويفت')" class="text-amber-400 hover:text-white">
                   <i class="fa-regular fa-copy"></i>
                 </button>
               </div>
               <div class="mono-data text-xs font-bold text-amber-300 redacted" id="swiftCodeText">
-                NCBKSAJE
+                --------
               </div>
             </div>
           </div>
@@ -289,7 +286,7 @@
       </div>
     </section>
 
-    <!-- 2. MODULE: بطاقة السفر والرحلة (لوحة رقمية تفاعلية + مولد باركود QR) -->
+    <!-- 2. MODULE: بطاقة السفر والرحلة -->
     <section id="module-travel" class="hidden space-y-3">
       <div class="hud-card p-5 rounded-3xl space-y-4 border-amber-500/30">
         <div class="flex justify-between items-center text-xs">
@@ -301,7 +298,6 @@
           </button>
         </div>
 
-        <!-- مسار ومحطات الرحلة -->
         <div class="bg-black/40 p-4 rounded-2xl border border-white/5 space-y-3">
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -342,7 +338,6 @@
           </div>
         </div>
 
-        <!-- مولد باركود QR الرقمي -->
         <div class="bg-black/50 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center space-y-2">
           <div class="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
             <i class="fa-solid fa-qrcode text-amber-400"></i> رمز الصعود والتحقق السريع (Scan Pass)
@@ -429,7 +424,7 @@
 
   </main>
 
-  <!-- نافذة التكبير بملء الشاشة لعرض الوثائق أو باركود الصعود -->
+  <!-- نافذة التكبير بملء الشاشة -->
   <div id="fullScreenViewer" class="hidden fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4">
     <button onclick="closeFullScreen()" class="absolute top-5 right-5 text-white text-lg bg-slate-800/80 w-10 h-10 rounded-full flex items-center justify-center border border-white/20">
       <i class="fa-solid fa-xmark"></i>
@@ -441,22 +436,65 @@
   </div>
 
   <script>
+    // ==========================================
+    // ⚙️ إعدادات المستخدم الشخصية (CONFIG PROFILE)
+    // قم بتعديل هذه القيم فقط لكل شخص جديد:
+    // ==========================================
+    const CONFIG = {
+      fullName: "نبيل محمد علي محمد",
+      shortNameEn: "NABIL ALNAMER",
+      initials: "NA",
+      jobTitleEn: "MARKETING SPECIALIST",
+      city: "الرياض، المملكة العربية السعودية",
+      phone: "+966502777884",
+      whatsappNumber: "966502777884", // بدون علامة +
+      bankName: "البنك الأهلي السعودي (SNB)",
+      iban: "SA6710000011100050137605",
+      accountNumber: "11100050137605",
+      swiftCode: "NCBKSAJE"
+    };
+
+    // حقن البيانات تلقائياً في الواجهة
+    function applyUserProfile() {
+      document.getElementById('headerOwnerName').textContent = CONFIG.shortNameEn;
+      document.getElementById('visitorFullName').textContent = CONFIG.fullName;
+      document.getElementById('visitorJobTitle').textContent = CONFIG.jobTitleEn;
+      document.getElementById('visitorCity').textContent = CONFIG.city;
+      document.getElementById('visitorInitials').textContent = CONFIG.initials;
+      document.getElementById('visitorCallBtn').href = `tel:${CONFIG.phone}`;
+      document.getElementById('visitorWhatsappBtn').href = `https://wa.me/${CONFIG.whatsappNumber}`;
+
+      document.getElementById('bankNameTitle').textContent = CONFIG.bankName;
+      document.getElementById('bankBeneficiaryName').textContent = CONFIG.fullName;
+
+      // تنسيق الآيبان بفواصل جمالية
+      const formattedIban = CONFIG.iban.replace(/(.{4})/g, '$1 ').trim();
+      document.getElementById('ibanText').textContent = formattedIban;
+      document.getElementById('accNumberText').textContent = CONFIG.accountNumber;
+      document.getElementById('swiftCodeText').textContent = CONFIG.swiftCode;
+    }
+
+    function copyDynamicData(field, msg) {
+      if (CONFIG[field]) {
+        copyData(CONFIG[field], msg);
+      }
+    }
+
     let isOwner = localStorage.getItem('smart_pass_owner') !== 'false';
     let isDataRevealed = false;
     let qrInstance = null;
 
     window.addEventListener('DOMContentLoaded', () => {
+      applyUserProfile();
       loadStoredImages();
       loadFlightDetails();
       updateAuthUI();
       loadStoredVehicleLocation();
     });
 
-    // تشغيل التطبيقات البنكية والحكومية عبر الروابط المباشرة
     function launchApp(deepLink, fallbackWebUrl) {
       const now = Date.now();
       window.location.href = deepLink;
-      
       setTimeout(() => {
         if (Date.now() - now < 2000) {
           window.open(fallbackWebUrl, '_blank');
@@ -464,7 +502,6 @@
       }, 1500);
     }
 
-    // توليد باركود QR لبطاقة الصعود
     function generateBoardingQRCode(payload) {
       const container = document.getElementById('qrcodeContainer');
       container.innerHTML = '';
@@ -489,7 +526,6 @@
       }
     }
 
-    // إدارة وتعديل الرحلة
     function editFlightDetails() {
       const fn = prompt('رقم الرحلة:', document.getElementById('flightNumber').textContent) || 'SV 1024';
       const pnr = prompt('رقم الحجز (PNR):', 'G7K9X2') || 'G7K9X2';
@@ -539,7 +575,6 @@
       window.open(`https://www.google.com/search?q=flight+${encodeURIComponent(fn)}`, '_blank');
     }
 
-    // إدارة الصور والوثائق
     function triggerDocUpload(inputId) {
       document.getElementById(inputId).click();
     }
@@ -681,16 +716,16 @@
     function broadcastEmergencySOS() {
       navigator.geolocation.getCurrentPosition(pos => {
         const link = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        window.open(`https://wa.me/966502777884?text=${encodeURIComponent('🚨 استغاثة طارئة:\n' + link)}`, '_blank');
+        window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent('🚨 استغاثة طارئة:\n' + link)}`, '_blank');
       }, () => alert('يرجى تفعيل صلاحية الموقع'));
     }
 
     function downloadVCard() {
-      const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:نبيل محمد علي محمد\nTITLE;CHARSET=UTF-8:اختصاصي تسويق\nTEL;TYPE=CELL,VOICE:+966502777884\nADR;TYPE=WORK;CHARSET=UTF-8:;;الرياض;المملكة العربية السعودية;;;\nEND:VCARD`;
+      const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN;CHARSET=UTF-8:${CONFIG.fullName}\nTITLE;CHARSET=UTF-8:${CONFIG.jobTitleEn}\nTEL;TYPE=CELL,VOICE:${CONFIG.phone}\nADR;TYPE=WORK;CHARSET=UTF-8:;;${CONFIG.city};;;\nEND:VCARD`;
       const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'Nabil_Alnamer.vcf';
+      a.download = `${CONFIG.shortNameEn.replace(/\s+/g, '_')}.vcf`;
       a.click();
     }
   </script>
